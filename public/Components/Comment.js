@@ -10,20 +10,19 @@ export default function Comment ($qnaList, render) {
   }
 
   const addDomEvent = () => {
-    $qnaList.forEach(($qna) => $qna.addEventListener('click', handleNewComment))
+    selector('ul.qna-wrap').addEventListener('click', handleNewComment)
   }
 
-  const handleNewComment = async (e) => {
-    const { target, currentTarget } = e
+  const handleNewComment = async ({ target }) => {
     if (isValidAction(target)) return
 
     const $content = selector('.answer-content-textarea', target.closest('.answer-form'))
-    const questionId = currentTarget.getAttribute('_questionId')
+    const questionId = target.closest('li.qna').getAttribute('_questionId')
     const content = $content.value
     $content.value = ''
 
     try {
-      selector('ul.answer', currentTarget).insertAdjacentHTML('beforeend', getLoadingAnswerTpl())
+      selector('ul.answer', target.closest('li.qna')).insertAdjacentHTML('beforeend', getLoadingAnswerTpl())
       await delay(DELAY_TIME)
       const response = await postComment({ questionId, content })
       if (response.ok) {
